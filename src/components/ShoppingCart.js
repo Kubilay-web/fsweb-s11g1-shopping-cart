@@ -1,28 +1,36 @@
 import React from "react";
-import { ScCartCheckout } from "./scParts";
-
-// Components
+import { useContext } from "react";
+import { CartContext } from "../context/CartContext";
 import Item from "./ShoppingCartItem";
 
-const ShoppingCart = (props) => {
+const ShoppingCart = () => {
+  const { cart, removeItem } = useContext(CartContext);
+
   const getCartTotal = () => {
-    return props.cart
-      .reduce((acc, value) => {
-        return acc + value.price;
-      }, 0)
-      .toFixed(2);
+    const total = cart.reduce((acc, item) => acc + item.price, 0);
+    return total.toFixed(2);
   };
 
   return (
     <div>
-      {props.cart.map((item) => (
-        <Item key={item.id} {...item} />
-      ))}
+      {cart.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <div>
+          {cart.map((item, index) => (
+            <Item
+              key={`${item.id}-${index}`}
+              {...item}
+              removeByOrder={() => removeItem(index)}
+            />
+          ))}
 
-      <ScCartCheckout>
-        <p>Total: ${getCartTotal()}</p>
-        <button>Checkout</button>
-      </ScCartCheckout>
+          <div>
+            <p>Total: ${getCartTotal()}</p>
+            <button>Checkout</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
